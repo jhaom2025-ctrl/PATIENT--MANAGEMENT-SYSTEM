@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Patient Management System</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI,sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:white;
+}
+
+/* HEADER */
+
+header{
+    height:80px;
+    background:#111827;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 30px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+}
+
+header h1{
+    font-size:28px;
+}
+
+.admin{
+    background:#2563eb;
+    padding:10px 18px;
+    border-radius:10px;
+}
+
+/* MAIN */
+
+.container{
+    display:flex;
+    min-height:calc(100vh - 80px);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    width:250px;
+    background:#111827;
+    padding:20px;
+}
+
+.menu{
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:12px;
+    cursor:pointer;
+    transition:0.3s;
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.menu:hover,
+.active{
+    background:#2563eb;
+}
+
+/* CONTENT */
+
+.content{
+    flex:1;
+    padding:25px;
+}
+
+.section{
+    display:none;
+}
+
+.active-section{
+    display:block;
+}
+
+/* CARDS */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:#1e293b;
+    padding:25px;
+    border-radius:20px;
+}
+
+.card h3{
+    margin-bottom:10px;
+    color:#cbd5e1;
+}
+
+.card p{
+    font-size:28px;
+    font-weight:bold;
+}
+
+/* FORM */
+
+.form-box{
+    background:#1e293b;
+    padding:25px;
+    border-radius:20px;
+    margin-bottom:25px;
+}
+
+.form-box h2{
+    margin-bottom:20px;
+}
+
+form{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:18px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+}
+
+.field label{
+    margin-bottom:8px;
+    color:#cbd5e1;
+    font-size:14px;
+}
+
+input,
+select{
+    padding:13px;
+    border:none;
+    border-radius:10px;
+    background:#334155;
+    color:white;
+    outline:none;
+}
+
+button{
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.save-btn{
+    background:#2563eb;
+    color:white;
+}
+
+.edit-btn{
+    background:#f59e0b;
+    color:white;
+}
+
+.delete-btn{
+    background:#dc2626;
+    color:white;
+}
+
+.pdf-btn{
+    background:#10b981;
+    color:white;
+}
+
+/* TABLE */
+
+.search{
+    margin-bottom:20px;
+}
+
+.search input{
+    width:100%;
+}
+
+.table-box{
+    background:#1e293b;
+    padding:20px;
+    border-radius:20px;
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:12px;
+    text-align:center;
+    font-size:13px;
+}
+
+th{
+    background:#2563eb;
+}
+
+tr:nth-child(even){
+    background:#334155;
+}
+
+.paid{
+    color:#22c55e;
+    font-weight:bold;
+}
+
+.pending{
+    color:#f59e0b;
+    font-weight:bold;
+}
+
+/* DOCTORS */
+
+.doctor-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.doctor-card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:20px;
+}
+
+.doctor-card h3{
+    margin-bottom:10px;
+}
+
+/* REPORT */
+
+.report-box{
+    background:#1e293b;
+    padding:25px;
+    border-radius:20px;
+}
+
+.report{
+    background:#334155;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+}
+
+.report h3{
+    margin-bottom:10px;
+    color:#60a5fa;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .container{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🏥 Patient Management System</h1>
+
+<div class="admin">
+Admin Dashboard
+</div>
+
+</header>
+
+<div class="container">
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<div class="menu active"
+onclick="showSection('dashboard',this)">
+
+<i class="fa fa-chart-line"></i>
+Dashboard
+
+</div>
+
+<div class="menu"
+onclick="showSection('doctors',this)">
+
+<i class="fa fa-user-doctor"></i>
+Doctors
+
+</div>
+
+<div class="menu"
+onclick="showSection('reports',this)">
+
+<i class="fa fa-file-medical"></i>
+Reports
+
+</div>
+
+</div>
+
+<!-- CONTENT -->
+
+<div class="content">
+
+<!-- DASHBOARD -->
+
+<div class="section active-section"
+id="dashboard">
+
+<div class="cards">
+
+<div class="card">
+<h3>Total Patients</h3>
+<p id="patientCount">0</p>
+</div>
+
+<div class="card">
+<h3>Doctors Available</h3>
+<p>12</p>
+</div>
+
+<div class="card">
+<h3>Rooms Occupied</h3>
+<p id="roomCount">0</p>
+</div>
+
+<div class="card">
+<h3>Total Revenue</h3>
+<p id="revenue">₹0</p>
+</div>
+
+</div>
+
+<!-- FORM -->
+
+<div class="form-box">
+
+<h2>Add / Edit Patient</h2>
+
+<form id="patientForm">
+
+<div class="field">
+<label>Patient ID</label>
+<input type="text" id="patientId" required>
+</div>
+
+<div class="field">
+<label>Aadhaar Number</label>
+<input type="text" id="aadhaar">
+</div>
+
+<div class="field">
+<label>Full Name</label>
+<input type="text" id="fullName" required>
+</div>
+
+<div class="field">
+<label>Father Name</label>
+<input type="text" id="fatherName">
+</div>
+
+<div class="field">
+<label>Mother Name</label>
+<input type="text" id="motherName">
+</div>
+
+<div class="field">
+<label>Date of Birth</label>
+<input type="date" id="dob">
+</div>
+
+<div class="field">
+<label>Age</label>
+<input type="number" id="age">
+</div>
+
+<div class="field">
+<label>Gender</label>
+
+<select id="gender">
+
+<option>Male</option>
+<option>Female</option>
+<option>Other</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label>Marital Status</label>
+
+<select id="maritalStatus">
+
+<option>Single</option>
+<option>Married</option>
+<option>Divorced</option>
+<option>Widowed</option>
+<option>Other</option>
+
+</select>
+
+</div>
+
+<div class="field">
+<label>Contact Number</label>
+<input type="text" id="contact">
+</div>
+
+<div class="field">
+<label>Email ID</label>
+<input type="email" id="email">
+</div>
+
+<div class="field">
+
+<label>Blood Group</label>
+
+<select id="bloodGroup">
+
+<option>A+</option>
+<option>A-</option>
+<option>B+</option>
+<option>B-</option>
+<option>AB+</option>
+<option>AB-</option>
+<option>O+</option>
+<option>O-</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label>State</label>
+
+<input list="stateList"
+id="state"
+placeholder="Select or Type State">
+
+<datalist id="stateList">
+
+<option value="Punjab">
+<option value="Haryana">
+<option value="Delhi">
+<option value="Rajasthan">
+<option value="Maharashtra">
+<option value="Uttar Pradesh">
+<option value="Bihar">
+<option value="Gujarat">
+
+</datalist>
+
+</div>
+
+<div class="field">
+
+<label>District</label>
+
+<input list="districtList"
+id="district"
+placeholder="Select or Type District">
+
+<datalist id="districtList">
+
+<option value="Amritsar">
+<option value="Ludhiana">
+<option value="Patiala">
+<option value="Jalandhar">
+<option value="Delhi">
+<option value="Jaipur">
+<option value="Mumbai">
+<option value="Lucknow">
+
+</datalist>
+
+</div>
+
+<div class="field">
+<label>Full Address</label>
+<input type="text" id="address">
+</div>
+
+<div class="field">
+
+<label>Disease</label>
+
+<input list="diseaseList"
+id="disease"
+placeholder="Select or Type Disease">
+
+<datalist id="diseaseList">
+
+<option value="Fever">
+<option value="Diabetes">
+<option value="Asthma">
+<option value="Cancer">
+<option value="COVID-19">
+<option value="Tuberculosis">
+<option value="Heart Disease">
+<option value="Typhoid">
+<option value="Migraine">
+<option value="Dengue">
+<option value="Malaria">
+<option value="Kidney Stone">
+<option value="Skin Allergy">
+<option value="Pneumonia">
+<option value="Hypertension">
+
+</datalist>
+
+</div>
+
+<div class="field">
+
+<label>Doctor Assigned</label>
+
+<select id="doctor"></select>
+
+</div>
+
+<div class="field">
+<label>Admit Date</label>
+<input type="date" id="admitDate">
+</div>
+
+<div class="field">
+<label>Discharge Date</label>
+<input type="date" id="dischargeDate">
+</div>
+
+<div class="field">
+<label>Room Number</label>
+<input type="text" id="roomNo">
+</div>
+
+<div class="field">
+
+<label>Payment Status</label>
+
+<select id="paymentStatus">
+
+<option>Paid</option>
+<option>Pending</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label>Payment Mode</label>
+
+<select id="paymentMode">
+
+<option>Cash</option>
+<option>UPI</option>
+<option>Card</option>
+
+</select>
+
+</div>
+
+<button type="submit"
+class="save-btn">
+
+Save Patient
+
+</button>
+
+</form>
+
+</div>
+
+<!-- SEARCH -->
+
+<div class="search">
+
+<input type="text"
+id="search"
+placeholder="Search Patient By Name">
+
+</div>
+
+<!-- TABLE -->
+
+<div class="table-box">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+<th>Name</th>
+<th>Disease</th>
+<th>Doctor</th>
+<th>Payment</th>
+<th>Mode</th>
+<th>Room</th>
+<th>PDF</th>
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tableBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- DOCTORS -->
+
+<div class="section"
+id="doctors">
+
+<div class="doctor-grid"
+id="doctorGrid"></div>
+
+</div>
+
+<!-- REPORTS -->
+
+<div class="section"
+id="reports">
+
+<div class="report-box">
+
+<h2 style="margin-bottom:20px;">
+Patient Reports
+</h2>
+
+<div id="reportContainer"></div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* DATABASE */
+
+let patients =
+JSON.parse(localStorage.getItem("patients"))
+|| [
+
+{
+patientId:"P101",
+fullName:"Rahul Sharma",
+disease:"Fever",
+doctor:"Dr. Sharma",
+paymentStatus:"Paid",
+paymentMode:"UPI",
+roomNo:"101"
+},
+
+{
+patientId:"P102",
+fullName:"Priya Singh",
+disease:"Asthma",
+doctor:"Dr. Khan",
+paymentStatus:"Pending",
+paymentMode:"Cash",
+roomNo:"102"
+},
+
+{
+patientId:"P103",
+fullName:"Aman Verma",
+disease:"Diabetes",
+doctor:"Dr. Mehta",
+paymentStatus:"Paid",
+paymentMode:"Card",
+roomNo:"103"
+},
+
+{
+patientId:"P104",
+fullName:"Sneha Kapoor",
+disease:"Cancer",
+doctor:"Dr. Jain",
+paymentStatus:"Pending",
+paymentMode:"UPI",
+roomNo:"104"
+},
+
+{
+patientId:"P105",
+fullName:"Rohit Kumar",
+disease:"Migraine",
+doctor:"Dr. Arora",
+paymentStatus:"Paid",
+paymentMode:"Cash",
+roomNo:"105"
+}
+
+];
+
+let editIndex = -1;
+
+/* DOCTORS */
+
+const doctors = [
+
+{
+name:"Dr. Sharma",
+specialization:"Cardiologist"
+},
+
+{
+name:"Dr. Khan",
+specialization:"Neurologist"
+},
+
+{
+name:"Dr. Mehta",
+specialization:"Orthopedic"
+},
+
+{
+name:"Dr. Gupta",
+specialization:"Dermatologist"
+},
+
+{
+name:"Dr. Verma",
+specialization:"Pediatrician"
+},
+
+{
+name:"Dr. Patel",
+specialization:"ENT Specialist"
+},
+
+{
+name:"Dr. Singh",
+specialization:"General Physician"
+},
+
+{
+name:"Dr. Jain",
+specialization:"Oncologist"
+},
+
+{
+name:"Dr. Kapoor",
+specialization:"Gynecologist"
+},
+
+{
+name:"Dr. Arora",
+specialization:"Psychiatrist"
+},
+
+{
+name:"Dr. Batra",
+specialization:"Dentist"
+},
+
+{
+name:"Dr. Nair",
+specialization:"Pulmonologist"
+}
+
+];
+
+/* LOAD DOCTORS */
+
+function loadDoctors(){
+
+let doctorGrid =
+document.getElementById("doctorGrid");
+
+let doctorSelect =
+document.getElementById("doctor");
+
+doctorGrid.innerHTML = "";
+doctorSelect.innerHTML = "";
+
+doctors.forEach(doc => {
+
+doctorGrid.innerHTML += `
+
+<div class="doctor-card">
+
+<h3>${doc.name}</h3>
+
+<p>${doc.specialization}</p>
+
+</div>
+
+`;
+
+doctorSelect.innerHTML += `
+
+<option value="${doc.name}">
+${doc.name}
+</option>
+
+`;
+
+});
+
+}
+
+/* SAVE */
+
+function saveData(){
+
+localStorage.setItem(
+"patients",
+JSON.stringify(patients)
+);
+
+}
+
+/* REPORT */
+
+function getTreatment(disease){
+
+disease = disease.toLowerCase();
+
+if(disease.includes("fever")){
+
+return {
+
+test:"CBC Blood Test",
+medicine:"Paracetamol",
+advice:"Take Rest"
+
+};
+
+}
+
+else if(disease.includes("diabetes")){
+
+return {
+
+test:"Blood Sugar Test",
+medicine:"Metformin",
+advice:"Avoid Sugar"
+
+};
+
+}
+
+else{
+
+return {
+
+test:"General Checkup",
+medicine:"Doctor Consultation",
+advice:"Follow Prescription"
+
+};
+
+}
+
+}
+
+/* DISPLAY */
+
+function displayPatients(data = patients){
+
+let tableBody =
+document.getElementById("tableBody");
+
+let reportContainer =
+document.getElementById("reportContainer");
+
+tableBody.innerHTML = "";
+reportContainer.innerHTML = "";
+
+document.getElementById("patientCount")
+.innerText = patients.length;
+
+document.getElementById("roomCount")
+.innerText = patients.length;
+
+document.getElementById("revenue")
+.innerText =
+"₹" + (patients.length * 10000);
+
+data.forEach((p,index)=>{
+
+tableBody.innerHTML += `
+
+<tr>
+
+<td>${p.patientId || ""}</td>
+
+<td>${p.fullName || ""}</td>
+
+<td>${p.disease || ""}</td>
+
+<td>${p.doctor || ""}</td>
+
+<td class="${
+p.paymentStatus === "Paid"
+? "paid"
+: "pending"
+}">
+
+${p.paymentStatus || ""}
+
+</td>
+
+<td>${p.paymentMode || ""}</td>
+
+<td>${p.roomNo || ""}</td>
+
+<td>
+
+<button class="pdf-btn"
+onclick="downloadPDF(${index})">
+
+PDF
+
+</button>
+
+</td>
+
+<td>
+
+<button class="edit-btn"
+onclick="editPatient(${index})">
+
+Edit
+
+</button>
+
+<button class="delete-btn"
+onclick="deletePatient(${index})">
+
+Delete
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+let report =
+getTreatment(p.disease || "");
+
+reportContainer.innerHTML += `
+
+<div class="report">
+
+<h3>${p.fullName || ""}</h3>
+
+<p><b>Disease:</b>
+${p.disease || ""}</p>
+
+<p><b>Recommended Test:</b>
+${report.test || ""}</p>
+
+<p><b>Medicine:</b>
+${report.medicine || ""}</p>
+
+<p><b>Advice:</b>
+${report.advice || ""}</p>
+
+</div>
+
+`;
+
+});
+
+}
+
+/* FORM */
+
+document.getElementById("patientForm")
+.addEventListener("submit",function(e){
+
+e.preventDefault();
+
+let patient = {
+
+patientId:patientId.value,
+aadhaar:aadhaar.value,
+fullName:fullName.value,
+fatherName:fatherName.value,
+motherName:motherName.value,
+dob:dob.value,
+age:age.value,
+gender:gender.value,
+maritalStatus:maritalStatus.value,
+contact:contact.value,
+email:email.value,
+bloodGroup:bloodGroup.value,
+state:state.value,
+district:district.value,
+address:address.value,
+disease:disease.value,
+doctor:doctor.value,
+admitDate:admitDate.value,
+dischargeDate:dischargeDate.value,
+roomNo:roomNo.value,
+paymentStatus:paymentStatus.value,
+paymentMode:paymentMode.value
+
+};
+
+if(editIndex === -1){
+
+patients.push(patient);
+
+}else{
+
+patients[editIndex] = patient;
+
+editIndex = -1;
+
+}
+
+saveData();
+
+displayPatients();
+
+this.reset();
+
+});
+
+/* DELETE */
+
+function deletePatient(index){
+
+if(confirm("Delete Patient?")){
+
+patients.splice(index,1);
+
+saveData();
+
+displayPatients();
+
+}
+
+}
+
+/* EDIT */
+
+function editPatient(index){
+
+let p = patients[index];
+
+editIndex = index;
+
+patientId.value = p.patientId || "";
+aadhaar.value = p.aadhaar || "";
+fullName.value = p.fullName || "";
+fatherName.value = p.fatherName || "";
+motherName.value = p.motherName || "";
+dob.value = p.dob || "";
+age.value = p.age || "";
+gender.value = p.gender || "";
+maritalStatus.value = p.maritalStatus || "";
+contact.value = p.contact || "";
+email.value = p.email || "";
+bloodGroup.value = p.bloodGroup || "";
+state.value = p.state || "";
+district.value = p.district || "";
+address.value = p.address || "";
+disease.value = p.disease || "";
+doctor.value = p.doctor || "";
+admitDate.value = p.admitDate || "";
+dischargeDate.value = p.dischargeDate || "";
+roomNo.value = p.roomNo || "";
+paymentStatus.value = p.paymentStatus || "";
+paymentMode.value = p.paymentMode || "";
+
+window.scrollTo({
+
+top:0,
+behavior:"smooth"
+
+});
+
+}
+
+/* SEARCH */
+
+document.getElementById("search")
+.addEventListener("keyup",function(){
+
+let value =
+this.value.toLowerCase();
+
+let filtered =
+patients.filter(p =>
+
+(p.fullName || "")
+.toLowerCase()
+.includes(value)
+
+);
+
+displayPatients(filtered);
+
+});
+
+/* PDF */
+
+function downloadPDF(index){
+
+const { jsPDF } =
+window.jspdf;
+
+let doc = new jsPDF();
+
+let p = patients[index];
+
+doc.setFontSize(18);
+
+doc.text(
+"Patient Report",
+20,
+20
+);
+
+doc.setFontSize(12);
+
+let y = 40;
+
+for(let key in p){
+
+doc.text(
+`${key}: ${p[key] || ""}`,
+20,
+y
+);
+
+y += 10;
+
+}
+
+doc.save(
+(p.fullName || "patient")
++ ".pdf"
+);
+
+}
+
+/* MENU */
+
+function showSection(id,element){
+
+document.querySelectorAll(".section")
+.forEach(sec => {
+
+sec.classList.remove(
+"active-section"
+);
+
+});
+
+document.getElementById(id)
+.classList.add("active-section");
+
+document.querySelectorAll(".menu")
+.forEach(m => {
+
+m.classList.remove("active");
+
+});
+
+element.classList.add("active");
+
+}
+
+/* INITIAL */
+
+loadDoctors();
+
+displayPatients();
+
+</script>
+
+</body>
+</html>
